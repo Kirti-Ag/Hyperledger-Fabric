@@ -84,11 +84,11 @@ func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorI
 
 	return assets, nil
 }
-func (t=s *SmartContract) QueryAssetsByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*Asset, error) {
+func (s *SmartContract) QueryAssetsByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*Asset, error) {
 	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog","ip":"%s"}}`, ip)
 	return getQueryResultForQueryString(ctx, queryString)
 }
-func (t=s *SmartContract) QueryAssetsByTimestamp(ctx contractapi.TransactionContextInterface, datetime string) ([]*Asset, error) {
+func (s *SmartContract) QueryAssetsByTimestamp(ctx contractapi.TransactionContextInterface, datetime string) ([]*Asset, error) {
 	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog",datetime":"%s"}}`, datetime)
 	return getQueryResultForQueryString(ctx, queryString)
 }
