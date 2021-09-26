@@ -83,7 +83,7 @@ func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorI
 
 	return logs, nil
 }
-func (s *SmartContract) QuerLogByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*AccessLog, error) {
+func (s *SmartContract) QueryLogByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*AccessLog, error) {
 	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog","ip":"%s"}}`, ip)
 	return getQueryResultForQueryString(ctx, queryString)
 }
