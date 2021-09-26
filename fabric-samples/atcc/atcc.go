@@ -17,7 +17,7 @@ type SmartContract struct {
 type AccessLog struct {
 	DocType  string    `json:"docType"`
 	ID       string    `json:"ID"`
-	IP       string    `json:ip`
+	IP       string    `json:"ip"`
 	DateTime string    `json:"datetime"`
 	ReqType  string    `json:"reqtype"`
 	Path     string    `json:"path"`
