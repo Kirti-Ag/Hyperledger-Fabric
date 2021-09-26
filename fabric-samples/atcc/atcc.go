@@ -14,7 +14,9 @@ type SmartContract struct {
 }
 
 type AccessLog struct {
+	DocType  string    `json:"docType"`
 	ID       string    `json:"ID"`
+	IP       string    `json:ip`
 	DateTime string    `json:"datetime"`
 	ReqType  string    `json:"reqtype"`
 	Path     string    `json:"path"`
@@ -32,7 +34,9 @@ func (s *SmartContract) WriteLog(ctx contractapi.TransactionContextInterface, ip
 	}
 
 	accesslog := AccessLog{
+		DocType:  "accesslog",
 		ID:       id,
+		IP:       ip,
 		DateTime: datetime,
 		ReqType:  reqtype,
 		Path:     path,
@@ -62,6 +66,44 @@ func (s *SmartContract) ReadLog(ctx contractapi.TransactionContextInterface, id 
 
 	return &accesslog, nil
 }
+func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*AccessLog, error) {
+	var assets []*AccessLog
+	for resultsIterator.HasNext() {
+		queryResult, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+		var asset AccessLog
+		err = json.Unmarshal(queryResult.Value, &asset)
+		if err != nil {
+			return nil, err
+		}
+		assets = append(assets, &asset)
+	}
+
+	return assets, nil
+}
+func (t=s *SmartContract) QueryAssetsByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*Asset, error) {
+	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog","ip":"%s"}}`, ip)
+	return getQueryResultForQueryString(ctx, queryString)
+}
+func (t=s *SmartContract) QueryAssetsByTimestamp(ctx contractapi.TransactionContextInterface, datetime string) ([]*Asset, error) {
+	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog",datetime":"%s"}}`, datetime)
+	return getQueryResultForQueryString(ctx, queryString)
+}
+func (s *SmartContract) QueryAssets(ctx contractapi.TransactionContextInterface, queryString string) ([]*AccessLog, error) {
+	return getQueryResultForQueryString(ctx, queryString)
+}
+func getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*AccessLog, error) {
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	return constructQueryResponseFromIterator(resultsIterator)
+}
+
 
 // LogExists returns true when asset with given ID exists in world state
 func (s *SmartContract) LogExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
