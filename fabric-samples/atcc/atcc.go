@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -68,31 +67,31 @@ func (s *SmartContract) ReadLog(ctx contractapi.TransactionContextInterface, id 
 	return &accesslog, nil
 }
 func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*AccessLog, error) {
-	var assets []*AccessLog
+	var logs []*AccessLog
 	for resultsIterator.HasNext() {
 		queryResult, err := resultsIterator.Next()
 		if err != nil {
 			return nil, err
 		}
-		var asset AccessLog
-		err = json.Unmarshal(queryResult.Value, &asset)
+		var log AccessLog
+		err = json.Unmarshal(queryResult.Value, &log)
 		if err != nil {
 			return nil, err
 		}
-		assets = append(assets, &asset)
+		logs = append(logs, &log)
 	}
 
-	return assets, nil
+	return logs, nil
 }
-func (s *SmartContract) QueryAssetsByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*AccessLog, error) {
+func (s *SmartContract) QuerLogByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*AccessLog, error) {
 	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog","ip":"%s"}}`, ip)
 	return getQueryResultForQueryString(ctx, queryString)
 }
-func (s *SmartContract) QueryAssetsByTimestamp(ctx contractapi.TransactionContextInterface, datetime string) ([]*AccessLog, error) {
-	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog",datetime":"%s"}}`, datetime)
+func (s *SmartContract) QueryLogByTimestamp(ctx contractapi.TransactionContextInterface, datetime string) ([]*AccessLog, error) {
+	queryString := fmt.Sprintf(`{"selector":{"datetime":"%s"}}`, datetime)
 	return getQueryResultForQueryString(ctx, queryString)
 }
-func (s *SmartContract) QueryAssets(ctx contractapi.TransactionContextInterface, queryString string) ([]*AccessLog, error) {
+func (s *SmartContract) QueryLog(ctx contractapi.TransactionContextInterface, queryString string) ([]*AccessLog, error) {
 	return getQueryResultForQueryString(ctx, queryString)
 }
 func getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*AccessLog, error) {
