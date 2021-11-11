@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -21,7 +22,6 @@ type AccessLog struct {
 	ReqType  string    `json:"reqtype"`
 	Path     string    `json:"path"`
 }
-
 // WriteLog creates a new log entry to the world state with given details.
 func (s *SmartContract) WriteLog(ctx contractapi.TransactionContextInterface, ip string, datetime string, reqtype string, path string) error {
 	id := ip + "_" + datetime
@@ -84,6 +84,7 @@ func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorI
 	return logs, nil
 }
 func (s *SmartContract) QueryLogByIP(ctx contractapi.TransactionContextInterface, ip string) ([]*AccessLog, error) {
+
 	queryString := fmt.Sprintf(`{"selector":{"docType":"accesslog","ip":"%s"}}`, ip)
 	return getQueryResultForQueryString(ctx, queryString)
 }
@@ -116,6 +117,7 @@ func (s *SmartContract) LogExists(ctx contractapi.TransactionContextInterface, i
 }
 
 func main() {
+		start :=time.Now()
     assetChaincode, err := contractapi.NewChaincode(&SmartContract{})
     if err != nil {
       log.Panicf("Error creating asset-transfer-basic chaincode: %v", err)
@@ -124,6 +126,8 @@ func main() {
     if err := assetChaincode.Start(); err != nil {
       log.Panicf("Error starting asset-transfer-basic chaincode: %v", err)
     }
+    elapsed := time.Since(start)
+    fmt.Printf("Time taken: %v\n",elapsed)
 }
 
 
