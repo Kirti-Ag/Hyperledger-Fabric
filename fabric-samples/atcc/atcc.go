@@ -127,7 +127,7 @@ func main() {
       log.Panicf("Error starting asset-transfer-basic chaincode: %v", err)
     }
     elapsed := time.Since(start)
-    fmt.Panicf("Time taken: %v\n",elapsed)
+    fmt.Errorf("Time taken: %v\n",elapsed)
 }
 
 
